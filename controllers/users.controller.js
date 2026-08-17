@@ -1,7 +1,14 @@
 const { createUser } = require('../queries/users.queries');
 const path = require('path');
 const multer = require('multer');
-const upload = multer({ storage: multer.diskStorage({
+const upload = multer({
+  // Sans limite de taille ni filtre de type, n'importe qui peut déposer un
+  // fichier de plusieurs gigaoctets, ou un script déguisé en image.
+  limits: { fileSize: 2 * 1000 * 1000 },
+  fileFilter: (req, file, cb) => {
+    cb(null, file.mimetype.startsWith('image/'));
+  },
+  storage: multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join( __dirname, '../public/images/avatars'))
   },
